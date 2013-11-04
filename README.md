@@ -12,11 +12,14 @@ Contrubution by:
 Currently I have not setup a clojar download yet. You need to git clone this project to your local disk.
 Then run:
 
-```lein compile
-lein install```
+```lein compile```
+
+```lein install```
+
 This will add CloServe to your local maven repo.
 
 In your project that use CloServe, you can add to project.clj file dependencies:
+
 ```
 [closerve "0.1.0-SNAPSHOT"]
 ```
