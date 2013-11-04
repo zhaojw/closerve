@@ -12,6 +12,8 @@ Contrubution by:
 Currently I have not setup a clojar download yet. You need to git clone this project to your local disk.
 Then run:
 
+```lein cljsbuild clean```
+
 ```lein compile```
 
 ```lein install```
