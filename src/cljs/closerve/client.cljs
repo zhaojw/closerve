@@ -73,6 +73,14 @@
 (defn process-server-msg [msg in page-id]
   (let [server-cmd (reader/read-string (str msg))]    
     (condp = (server-cmd :act)
+      ;;;for reason unknown to me, the :val and :attr method not works
+      :val          (.val (jq/$ (:selector server-cmd)) 
+                         (:new-val server-cmd))
+      :attr         (.attr (jq/$ (:selector server-cmd))
+                           (:key server-cmd)
+                           (:val server-cmd)
+                           )
+      :reset       (doseq [ef (jq/$ (:selector server-cmd))] (.reset ef))
       :append      (.append (jq/$ (:selector server-cmd)) (:html server-cmd))
       :replaceWith (.replaceWith (jq/$ (:selector server-cmd)) (:html server-cmd))
       :hide        (.hide (jq/$ (:id server-cmd)))

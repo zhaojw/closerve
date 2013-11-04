@@ -1,9 +1,10 @@
 (ns closerve.snippet
   (:require [hickory.core :as h]
             [clojure.zip :as zip]
+            [clojure.set :as set]
             [clojure.core.async :refer [go close! >!! <! >! sliding-buffer chan]])
   (:use [clojure.xml] 
-        [clojure.walk]
+        [clojure.walk]        
         [clojure.contrib.core]
         [hickory zip render]
         [ring.util.time :only (format-date)]
@@ -21,7 +22,8 @@
                           (get-in lift-instr [:params "callback"])
                           {:session-id (-> req :session :session-id)
                            :page-id page-id
-                           :form-id form-id}
+                           :form-id form-id
+                           :name->uuid (set/map-invert uuid->name)}
                           :pre-proc-fn (fn [cm]
                                          (let [data (:data cm)
                                                params (codec/form-decode data "UTF-8")
