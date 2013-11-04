@@ -26,6 +26,8 @@ In your project that use CloServe, you can add to project.clj file dependencies:
 [closerve "0.1.0-SNAPSHOT"]
 ```
 
+[Example](https://github.com/zhaojw/closerve-example)
+
 ## Current Status
 This project is in very beta stage. Quite some debug message will be thrown to the console. The apis could
 change a lot in the future. Could have security issuses as well. 
