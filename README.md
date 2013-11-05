@@ -45,3 +45,7 @@ hickory, jayq, clojurescript, crypto-random ..., a lot is learnt from
 Copyright © 2013 Jiawei Zhao, MKRRF IT Limited
 
 Distributed under the Eclipse Public License, the same as Clojure.
+
+The files that are marked as from third party (for eg, the js files under extern/)
+belongs to the corresponding third party and have their own corresponding license.
+
