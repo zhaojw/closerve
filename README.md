@@ -26,8 +26,9 @@ In your project that use CloServe, you can add to project.clj file dependencies:
 [closerve "0.1.0-SNAPSHOT"]
 ```
 
-[Example](https://github.com/zhaojw/closerve-example)
-[Running Demo](http://closerve.mkrrf-it.com/lazyload)
+[Example Code](https://github.com/zhaojw/closerve-example)
+
+[Running Example](http://closerve.mkrrf-it.com/lazyload)
 
 
 ## Current Status
