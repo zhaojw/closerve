@@ -27,6 +27,8 @@ In your project that use CloServe, you can add to project.clj file dependencies:
 ```
 
 [Example](https://github.com/zhaojw/closerve-example)
+[Running Demo](http://closerve.mkrrf-it.com/lazyload)
+
 
 ## Current Status
 This project is in very beta stage. Quite some debug message will be thrown to the console. The apis could
