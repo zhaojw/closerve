@@ -7079,7 +7079,7 @@ function Li(a, b, c) {
           }(function(a) {
             var e = a[1];
             if(7 === e) {
-              var f = a[2], h = "wait form element to arrive".log(), k = Bi.b(l);
+              var f = a[2], h = console.log(re.e(N(["wait form element to arrive"], 0))), k = Bi.b(l);
               a[5] = k;
               a[6] = h;
               a[7] = f;
