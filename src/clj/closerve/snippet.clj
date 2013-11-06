@@ -16,11 +16,11 @@
    "form.ajax" 
  [node req page-id lift-instr]
  (let [sub-nodes-transed (process-snippets node req page-id)
-       {:keys [new-node uuid->name form-id]} (randomize-node-names sub-nodes-transed)
-       func-callback nil]
+       {:keys [new-node uuid->name form-id]} (randomize-node-names sub-nodes-transed)]
    (register-call-back-fn page-id form-id 
                           (get-in lift-instr [:params "callback"])
                           {:session-id (-> req :session :session-id)
+                           :req     req
                            :page-id page-id
                            :form-id form-id
                            :name->uuid (set/map-invert uuid->name)}
