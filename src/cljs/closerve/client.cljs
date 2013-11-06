@@ -88,7 +88,7 @@
                 (go (loop [matched-form (jq/$ form-id)]
                       (if (= 0 (.size matched-form))
                         (do (<! (timeout 500))
-                            (.log "wait form element to arrive")
+                            (log "wait form element to arrive")
                             (recur (jq/$ form-id)))
                         (.submit matched-form
                          (fn [e]
