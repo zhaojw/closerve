@@ -85,17 +85,22 @@
       :replaceWith (.replaceWith (jq/$ (:selector server-cmd)) (:html server-cmd))
       :hide        (.hide (jq/$ (:id server-cmd)))
       :submit (let [form-id (str "#" (server-cmd :form-id))]
-                    (.submit (jq/$ form-id)
-                             (fn [e]
-                               (this-as this 
-                                        (.preventDefault e)
+                (go (loop [matched-form (jq/$ form-id)]
+                      (if (= 0 (.size matched-form))
+                        (do (<! (timeout 500))
+                            (.log "wait form element to arrive")
+                            (recur (jq/$ form-id)))
+                        (.submit matched-form
+                         (fn [e]
+                           (this-as this 
+                                    (.preventDefault e)
                                         ;(log "form submit action")
                                         ;.serialize
-                                        (go (>! in (str {:act :submit
-                                                         :page-id page-id
-                                                         :submit (:form-id server-cmd)
-                                                         :data (.serialize (jq/$ this))}))))
-                               )))
+                                    (go (>! in (str {:act :submit
+                                                     :page-id page-id
+                                                     :submit (:form-id server-cmd)
+                                                     :data (.serialize (jq/$ this))}))))
+                           ))))))
       :redirect   (set! (.-location js/window) (server-cmd :url))
       :reload     (.reload (.-location js/window) true)
       nil          nil ; ignore the none command msgs
