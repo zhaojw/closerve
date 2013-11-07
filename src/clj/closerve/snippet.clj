@@ -18,7 +18,7 @@
  (let [sub-nodes-transed (process-snippets node req page-id)
        {:keys [new-node uuid->name form-id]} (randomize-node-names sub-nodes-transed)]
    (register-call-back-fn page-id form-id 
-                          (get-in lift-instr [:params "callback"])
+                          (lift-instr "callback")
                           {:session-id (-> req :session :session-id)
                            :req     req
                            :page-id page-id
@@ -54,7 +54,7 @@
  "comet"
  [node req page-id lift-instr]
  (let [uuid (make-random-uuid)
-       actor-fn (@name->comet (get-in lift-instr [:params "type"]))
+       actor-fn (@name->comet (lift-instr "type"))
        comet-ch (chan)
        fastret (assoc node [:attrs :id] uuid)]
    (swap! page->comet-ch assoc-into-key-values page-id comet-ch)
@@ -64,7 +64,7 @@
 (register-lift-snippet
  "embed"
  [node req page-id lift-instr]
- (if-let [to-embed (get-in lift-instr [:params "what"])]
+ (if-let [to-embed (lift-instr "what")]
    (try 
      (let [efilename (str @root-dir "/templates-hidden/" to-embed ".html")
            eforms (map h/as-hickory (h/parse-fragment (slurp  efilename)))]

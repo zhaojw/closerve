@@ -86,13 +86,13 @@
 
 (defn process-snippets [node req page-id]
   (let [walk-func (fn [nodex]
-                    (let [lift-instr (identify-lift-element nodex)]
-                      (if lift-instr 
-                        (let [snippet-func (@lift-snippet-dict (:name lift-instr))
+                    (let [lift-idenf (identify-lift-element nodex)]
+                      (if lift-idenf 
+                        (let [snippet-func (@lift-snippet-dict (:name lift-idenf))
                               clean-node (strip-lift-mark nodex)]
                           ;(prn lift-instr (:tag nodex) (:class nodex))
                           (if snippet-func 
-                            (snippet-func clean-node req page-id lift-instr)
+                            (snippet-func clean-node req page-id (:params lift-idenf))
                             clean-node)
                           )
                         nodex)))]

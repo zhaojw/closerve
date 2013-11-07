@@ -1,4 +1,4 @@
-(defproject closerve "0.1.0-SNAPSHOT"
+(defproject closerve "0.2.0-SNAPSHOT"
   :description "CloServe, a view first web framework"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
