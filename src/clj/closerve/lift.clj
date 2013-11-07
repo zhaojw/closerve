@@ -28,10 +28,7 @@
                           (catch Exception e
                             (prn "Error to process lift surround")
                             orig-form))
-            new-form (try (process-lift-embed new-form root-path)
-                          (catch Exception e 
-                            (prn "Error to process lift embed")
-                            new-form))
+
             new-form (process-snippets new-form req page-id)
             new-form (addin-js new-form req page-id)
             new-html-txt (hickory-to-html new-form)] 

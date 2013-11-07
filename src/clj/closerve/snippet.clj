@@ -60,3 +60,17 @@
    (swap! page->comet-ch assoc-into-key-values page-id comet-ch)
    (if actor-fn (actor-fn comet-ch req page-id uuid))
    fastret))
+
+(register-lift-snippet
+ "embed"
+ [node req page-id lift-instr]
+ (if-let [to-embed (get-in lift-instr [:params "what"])]
+   (try 
+     (let [efilename (str @root-dir "/templates-hidden/" to-embed ".html")
+           eforms (map h/as-hickory (h/parse-fragment (slurp  efilename)))]
+       (assoc node :content (apply vector eforms) ))
+     (catch Exception e
+       (prn "Error to process lift embed" lift-instr)
+       node))
+   node)
+ )

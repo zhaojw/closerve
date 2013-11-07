@@ -68,23 +68,6 @@
      node)))
 
 
-(defn process-lift-embed [node root-path]
-  (let [walk-func (fn [nodex] 
-                    (let [lift-elem (try (identify-lift-element nodex)
-                                         (catch Exception e 
-                                           (prn e)
-                                           (prn "failed to identify lift element" nodex)
-                                           nil))
-                          lift-act (if lift-elem (:name lift-elem) nil)]
-                      (if (= "embed" lift-act) 
-                        (let [to-embed ((:params lift-elem) "what")
-                              efilename (str root-path "/templates-hidden/" to-embed ".html")
-                              eforms (map h/as-hickory (h/parse-fragment (slurp  efilename)))]
-                          ;;;here is not strictly the way lift embed other html files
-                          (-> nodex strip-lift-mark (assoc :content (apply vector eforms) )))
-                        nodex)))]
-    (prewalk walk-func node)))
-
 
 (defn addin-js [node req page-uuid]
   "add in the closerve.js <script> elements to the end of body"
