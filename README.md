@@ -14,8 +14,6 @@ Then run:
 
 ```lein cljsbuild clean```
 
-```lein compile```
-
 ```lein install```
 
 This will add CloServe to your local maven repo.
@@ -23,13 +21,22 @@ This will add CloServe to your local maven repo.
 In your project that use CloServe, you can add to project.clj file dependencies:
 
 ```
-[closerve "0.1.0-SNAPSHOT"]
+[closerve "0.2.0-SNAPSHOT"]
 ```
 
 [Example Code](https://github.com/zhaojw/closerve-example)
 
 [Running Example](http://closerve.mkrrf-it.com/lazyload)
 
+##Breaking change from 0.1.0 to 0.2.0
+register-lift-snippet macro's lift-instr parameter used to be: {:name SnippetName, :params {...}}
+Now it is just the :params part, so for eg, in 0.1.0 code, to get a lift parameter, the call is:
+
+```(get-in lift-instr [:params "SomeParameter"])```
+
+Now it is:
+
+```(lift-instr "SomeParameter")```
 
 ## Current Status
 This project is in very beta stage. Quite some debug message will be thrown to the console. The apis could
