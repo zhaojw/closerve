@@ -80,6 +80,9 @@
                            (:key server-cmd)
                            (:val server-cmd)
                            )
+      ;;;new, in testing still
+      :globalEval  (jQuery.globalEval (:code server-cmd))
+      ;;;
       :reset       (doseq [ef (jq/$ (:selector server-cmd))] (.reset ef))
       :append      (.append (jq/$ (:selector server-cmd)) (:html server-cmd))
       :replaceWith (.replaceWith (jq/$ (:selector server-cmd)) (:html server-cmd))
