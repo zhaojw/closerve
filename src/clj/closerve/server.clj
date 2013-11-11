@@ -13,7 +13,7 @@
             [clojure.core.async :refer [go close! <! >! <!! sliding-buffer chan timeout]]
             [crypto.random :as random]
             [clojure.edn :as edn])
-  (:use [closerve state lift util]
+  (:use [closerve state lift util session-manager]
         [clojure.pprint]
         [ring.middleware.session.cookie :only [cookie-store]]
         [ring.middleware.params :only [wrap-params]]))
@@ -77,7 +77,8 @@
       (do
         ;(prn "session has existing id:" (-> req :session :session-id))
         (handler req))
-      (let [session-id (swap! session-counter inc)]
+      (let [session-id (make-new-session @session-manager)]
+        ;(prn "new session with id" session-id)
         (-> req 
             (assoc-in [:session :session-id] session-id)
             handler
@@ -176,13 +177,19 @@
   
 
 (defn start-server [host port]
+  (if (nil? @session-manager) (reset! session-manager 
+                                      (->SimpleSessionManager (random/bytes 16)
+                                                              (atom nil)
+                                                              (atom {}))))
+  (init-session-manager @session-manager)
+
   (let [app (-> handler
                 wrap-dyna-dispatch
                 wrap-flexfile
                 (wrap-resource-add-type "public/")
                 wrap-params
                 wrap-enum-sessions
-                (session/wrap-session {:store (cookie-store {:key (random/bytes 16)})})
+                (session/wrap-session {:store (cookie-store {:key (get-cookie-key @session-manager)})})
                 wrap-rule-check
                 )]
     

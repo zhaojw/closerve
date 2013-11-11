@@ -7,8 +7,7 @@
 (defonce ws-chan (chan))
 (defonce access-rules (atom []))
 
-(defonce session-counter (atom (long (/ (.getTime (java.util.Date.)) 1000))))
-
+(defonce session-manager (atom nil))
 
 ;;;for lift snippet->func association
 (defonce lift-snippet-dict (atom {}))
