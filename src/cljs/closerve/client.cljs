@@ -82,6 +82,11 @@
                            )
       ;;;new, in testing still
       :globalEval  (jQuery.globalEval (:code server-cmd))
+      :queryEval   (let [qres (js/eval (:code server-cmd))]
+                     (go (>! in (str {:act :submit
+                                      :page-id page-id
+                                      :submit (:uuid server-cmd)
+                                      :data  qres}))))
       ;;;
       :reset       (doseq [ef (jq/$ (:selector server-cmd))] (.reset ef))
       :append      (.append (jq/$ (:selector server-cmd)) (:html server-cmd))

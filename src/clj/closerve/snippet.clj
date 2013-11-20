@@ -61,6 +61,26 @@
    (if actor-fn (actor-fn comet-ch req page-id uuid))
    fastret))
 
+
+(register-lift-snippet 
+ ;let browser run a js query, and send the result back to server
+ "query.ajax"
+ [node req page-id lift-instr]
+ (let [uuid (make-random-uuid)]
+   (register-call-back-fn page-id uuid
+                          (lift-instr "callback")
+                          {:session-id (-> req :session :session-id)
+                           :req     req
+                           :page-id page-id
+                           :uuid    uuid}
+                          :pre-proc-fn (fn [cm]
+                                         (let [data (:data cm)]
+                                           data)))
+   (send-cmd-to-page page-id {:act :queryEval :code (lift-instr "code") :uuid uuid})
+   node)
+)
+
+
 (register-lift-snippet
  "embed"
  [node req page-id lift-instr]
