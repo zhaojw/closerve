@@ -53,12 +53,12 @@
 
 ;;;mainly used for access rule check
 (defn get-normalized-path [req]
-  "ring file middleware seems to be case in-sensitive, so change to lower case"
+  "ring file middleware is case sensitive"
   "change // to /"
   "remove .html"
   "remove index"
   (let [path (codec/url-decode (request/path-info req))
-        path (clojure.string/lower-case path)
+;        path (clojure.string/lower-case path)
         path (if (re-matches #".*[.]html$" path) (subs path 0 (- (.length path) 5)) path)
         path (if (re-matches #".*/index$" path) (subs path 0 (- (.length path) 5)) path)
         path (clojure.string/replace path #"/+" "/")]
