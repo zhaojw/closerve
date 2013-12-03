@@ -5,7 +5,10 @@
 
 (defonce root-dir (atom nil))
 (defonce ws-chan (chan))
-(defonce access-rules (atom []))
+(defonce access-rules (atom [[#"^/\..*$" (fn [req] false)]
+                             [#"^.*~$" (fn [req] false)]
+                             [#"^/templates-hidden.*$" (fn [req] false)]
+                             ]))
 
 (defonce session-manager (atom nil))
 
