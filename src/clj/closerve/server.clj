@@ -25,10 +25,13 @@
 
 ;;;;filexible wrap file middleware
 ;;;;changed from ring's middleware file.clj implementation
+;;;;add index.html to end of path only if path end with '/', not use file-response to do this, since
+;;; it seems to mess up relative links for path end with dir name but with no "/" in the end.
 (defn try-to-get-file [req & [opts]]
-  (let [opts (merge {:root @root-dir, :index-files? true, :allow-symlinks? false} opts)]
-    (let [path (subs (codec/url-decode (request/path-info req)) 1)
-          path (if (= \/ (last path)) (str path "index.html") path)]
+  (let [opts (merge {:root @root-dir, :index-files? false, :allow-symlinks? false} opts)]
+    (let [path (get-normalized-path req)
+          path (if (= \/ (last path)) (str path "index.html") path)
+          path (subs path 1)]
       (if (not= 0 (.indexOf path "template-hidden/"))
         (let [
               t1-response (response/file-response path opts)
@@ -46,7 +49,7 @@
 (defn wrap-flexfile [handler & [opts]]
   "only request with no suffix or request with .html endings will go through lift, excluding static"
   (fn [req]
-    (let [path (subs (codec/url-decode (request/path-info req)) 1)
+    (let [path (subs (get-normalized-path req) 1)
           suffix (re-find #"\.([^./]+)$" path)
           get-file-func (if (or (= 0 (.indexOf path "static/"))
                                 (and suffix (not (#{".html"} (first suffix)) )))
