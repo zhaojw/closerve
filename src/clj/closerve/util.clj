@@ -41,10 +41,14 @@
 (defn randomize-node-names [node]
   "change all the name attributes under form node to random uuid and return also a mapping"
   (let [uuid->name (atom {})
+        name->uuid (atom {})
         walk-fun (fn [nodex] (if-let [orig-name (get-in nodex [:attrs :name])]
-                               (let [new-name (make-random-uuid)]
-                                 (swap! uuid->name assoc new-name orig-name)
-                                 (assoc-in nodex [:attrs :name] new-name))
+                               (if (@name->uuid orig-name) 
+                                 (assoc-in nodex [:attrs :name] (@name->uuid orig-name))
+                                 (let [new-name (make-random-uuid)]
+                                   (swap! uuid->name assoc new-name orig-name)
+                                   (swap! name->uuid assoc orig-name new-name)
+                                   (assoc-in nodex [:attrs :name] new-name)))
                                nodex))
         form-id (make-random-uuid)
         new-node (assoc-in node [:attrs :id] form-id)]
