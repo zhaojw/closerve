@@ -9,6 +9,7 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.resource :as resources]
             [ring.middleware.file :as midfile]
+            [ring.middleware.multipart-params :as multi]
             [com.keminglabs.jetty7-websockets-async.core :as ws]
             [clojure.core.async :refer [go close! <! >! <!! sliding-buffer chan timeout]]
             [crypto.random :as random]
@@ -178,6 +179,8 @@
      (recur)))
   )
   
+(defn upload-tmp-store [upload-key]
+  (println "!!! get uplaod key:" upload-key))
 
 (defn start-server [host port]
   (if (nil? @session-manager) (reset! session-manager 
@@ -191,6 +194,7 @@
                 wrap-flexfile
                 (wrap-resource-add-type "public/")
                 wrap-params
+                (multi/wrap-multipart-params :store upload-tmp-store)
                 wrap-enum-sessions
                 (session/wrap-session {:store (cookie-store {:key (get-cookie-key @session-manager)})})
                 wrap-rule-check
