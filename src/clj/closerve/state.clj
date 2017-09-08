@@ -1,9 +1,16 @@
 (ns closerve.state
   (:use [ring.util.codec :only (assoc-conj)]
         [closerve util])
-  (:require  [clojure.core.async :refer [go close! <! >! sliding-buffer chan]]))
+  (:require  [clojure.core.async :refer [go close! <! >! sliding-buffer chan]]
+             [ring.util.response :as response]))
 
 (defonce root-dir (atom nil))
+(defonce access-deny-action (atom (fn [req]
+                                    (do 
+                                      (prn "deny access to:" (get-normalized-path req))
+                                      {:status 404
+                                       :headers {"Content-Type" "text/html"}
+                                       :body "Not Found on Server"}))))
 (defonce ws-chan (chan))
 (defonce access-rules (atom [[#"^/\..*$" (fn [req] false)]
                              [#"^.*~$" (fn [req] false)]

@@ -108,11 +108,7 @@
       ;(prn "rule check" path suffix)
       (let [matched-rules (filter #(re-matches (first %) path) @access-rules)
             rejected ((comp not empty?) (filter #(not ((second %) req)) matched-rules))]
-        (if rejected (do 
-                       (prn "deny access to:" path)
-                       {:status 404
-                        :headers {"Content-Type" "text/html"}
-                        :body "Not Found on Server"})
+        (if rejected (@access-deny-action req)
             (handler req))
         ))))
 
