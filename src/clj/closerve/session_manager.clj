@@ -19,7 +19,7 @@
   (init-session-manager [this]
     (reset! session-counter (long (/ (.getTime (java.util.Date.)) 1000))))
   ;; make the session-id more random
-  (make-new-session [this] (str (make-random-uuid) (swap! session-counter inc)))
+  (make-new-session [this] (make-random-uuid) )
   (get-session-var [this session-id k] (get-in @session-store [session-id k]))
   (set-session-var [this session-id k v] (swap! session-store assoc-in [session-id k] v))
   (get-cookie-key [this] cookie-key)
