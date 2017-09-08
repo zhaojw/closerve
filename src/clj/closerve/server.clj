@@ -189,6 +189,7 @@
                                                               (atom {}))))
   (init-session-manager @session-manager)
 
+  ; ( -> handler ring-1 ring-2 ...) apply ring-1, ring-2 from inside ring to out
   (let [app (-> handler
                 wrap-dyna-dispatch
                 wrap-flexfile
@@ -196,8 +197,8 @@
                 wrap-params
                 (multi/wrap-multipart-params :store upload-tmp-store)
                 wrap-enum-sessions
-                (session/wrap-session {:store (cookie-store {:key (get-cookie-key @session-manager)})})
                 wrap-rule-check
+                (session/wrap-session {:store (cookie-store {:key (get-cookie-key @session-manager)})})
                 )]
     
     (make-new-ws-conn)
