@@ -37,8 +37,8 @@
         (let [
               t1-response (response/file-response path opts)
               t1-response (if t1-response t1-response 
-                              (if (and (not= 0 (.indexOf path "static/"))
-                                       (= -1 (.indexOf path ".html")))
+                              (if 
+                                  (= -1 (.indexOf path ".html"))
                                 (do 
                                   (response/file-response (str path ".html") opts))
                                 nil
