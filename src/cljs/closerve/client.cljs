@@ -25,6 +25,11 @@
 (def host
   (aget js/window "location" "host"))
 
+(def wsprotocol
+  (if (= "https:" (aget js/window "location" "protocol"))
+    "wss://" "ws://"
+    ))
+
 ;;adapted from torus-pong
 (defn connect!
   [url]
@@ -121,7 +126,7 @@
 ;;;adapted from torus.pong
 (defn ^:export run
   [page-id]
-  (let [{:keys [in out]} (connect! (str "ws://" host "/" page-id))]
+  (let [{:keys [in out]} (connect! (str wsprotocol host "/" page-id))]
 
     (go 
      (while true

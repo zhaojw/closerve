@@ -42,7 +42,8 @@
                                 (do 
                                   (response/file-response (str path ".html") opts))
                                 nil
-                                ))]
+                                ))
+              ]
           
           t1-response)))))
 
@@ -65,7 +66,9 @@
           get-result (get-file-func req)]
 
       (or get-result
-          (do (prn (str "use handler func for " path)) (handler req))))))
+          (do (prn (str "use handler func for " path))
+              (prn req)
+              (handler req))))))
 ;;;;
 
 (defn wrap-resource-add-type [handler root-path]
