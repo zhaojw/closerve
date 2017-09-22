@@ -67,7 +67,6 @@
 
       (or get-result
           (do (prn (str "use handler func for " path))
-              (prn req)
               (handler req))))))
 ;;;;
 
