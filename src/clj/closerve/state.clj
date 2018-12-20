@@ -106,3 +106,5 @@
       (close! comet-ch))
     (swap! page->uuid dissoc page-uuid)
     ))
+
+;; need to clean session if it goes to inactive for certain long time
