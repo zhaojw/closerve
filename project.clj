@@ -12,7 +12,7 @@
                  [jayq "2.5.5"]
                  [cljsjs/jquery "3.2.1-0"]
                  [crypto-random "1.1.0"]
-                 [hickory "0.5.1"]]
+                 [hickory "0.7.1"]]
   ;:main closerve.core
   :aot :all
   :hooks [leiningen.cljsbuild]
@@ -29,7 +29,6 @@
                            :output-to "resources/public/js/closerve.js"
                            :pretty-print true
                            :optimizations :advanced
-;;                           :externs ["externs/jquery-3.3.js"]
                            }}]})
 
 
