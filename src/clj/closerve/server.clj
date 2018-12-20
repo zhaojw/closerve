@@ -11,7 +11,7 @@
             [ring.middleware.file :as midfile]
             [ring.middleware.multipart-params :as multi]
             [com.keminglabs.jetty7-websockets-async.core :as ws]
-            [clojure.core.async :refer [go close! <! >! <!! sliding-buffer chan timeout]]
+            [clojure.core.async :refer [alts! go close! <! >! <!! sliding-buffer chan timeout]]
             [crypto.random :as random]
             [clojure.edn :as edn])
   (:use [closerve state lift util session-manager]
