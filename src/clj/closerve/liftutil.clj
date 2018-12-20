@@ -77,7 +77,7 @@
                             page-uuid)
                     #_(format "jQuery(document).ready(function() {closerve.client.run('%s');});"
                             page-uuid)
-                    (format "$(window).load(function() {closerve.client.run('%s');});"
+                    (format "$(window).on('load', function() {closerve.client.run('%s');});"
                             page-uuid)
                     "</script>")
         js-forms (->> js-txt h/parse-fragment (map h/as-hickory))]

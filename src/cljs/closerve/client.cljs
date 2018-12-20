@@ -7,7 +7,7 @@
             [goog.string]
             [goog.net.WebSocket]
             [goog.net.WebSocket.MessageEvent]            
-            [goog.net.WebSocket.EventType :as Events]            
+            [goog.net.WebSocket.EventType :as Events]                       
             [goog.dom]
             [jayq.core :as jq]
             ))
@@ -86,7 +86,7 @@
                            (:val server-cmd)
                            )
       ;;;new, in testing still
-      :globalEval  (jQuery.globalEval (:code server-cmd))
+      :globalEval  (js/jQuery.globalEval (:code server-cmd))
       :queryEval   (let [qres (js/eval (:code server-cmd))]
                      (go (>! in (str {:act :submit
                                       :page-id page-id
@@ -99,20 +99,21 @@
       :hide        (.hide (jq/$ (:id server-cmd)))
       :submit (let [form-id (str "#" (server-cmd :form-id))]
                 (go (loop [matched-form (jq/$ form-id)]
-                      (if (= 0 (.size matched-form))
+                      (if (= 0 (.-length matched-form))
                         (do (<! (timeout 500))
                             (log "wait form element to arrive")
                             (recur (jq/$ form-id)))
                         (.submit matched-form
                          (fn [e]
-                           (this-as this 
+                           (this-as thisform 
                                     (.preventDefault e)
-                                        ;(log "form submit action")
                                         ;.serialize
                                     (go (>! in (str {:act :submit
                                                      :page-id page-id
                                                      :submit (:form-id server-cmd)
-                                                     :data (.serialize (jq/$ this))}))))
+                                                     :data (.serialize (jq/$ thisform))
+                                                     })))
+                                    )
                            ))))))
       :redirect   (set! (.-location js/window) (server-cmd :url))
       :reload     (.reload (.-location js/window) true)
