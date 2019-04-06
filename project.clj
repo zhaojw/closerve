@@ -1,4 +1,5 @@
-(defproject closerve "0.2.0-SNAPSHOT"
+;;change to 0.3.0-snapshot: use immutant instead of jetty
+(defproject closerve "0.3.0-SNAPSHOT"
   :description "CloServe, a view first web framework"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -7,8 +8,8 @@
                  [org.clojure/clojurescript "1.9.908"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [org.clojure/core.async "0.4.490"]
-                 [ring "1.2.1"]
-                 [com.keminglabs/jetty7-websockets-async "0.1.0"]
+                 [ring "1.7.1"]
+                 [org.immutant/immutant "2.1.10"]
                  [jayq "2.5.5"]
                  [cljsjs/jquery "3.2.1-0"]
                  [crypto-random "1.1.0"]
@@ -18,6 +19,8 @@
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/clj"
                  ]
+  :resource-paths ["resources/"]
+  
   :plugins [[lein-cljsbuild "1.1.7"]
             ]
   

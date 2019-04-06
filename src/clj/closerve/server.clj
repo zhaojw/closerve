@@ -10,7 +10,11 @@
             [ring.middleware.resource :as resources]
             [ring.middleware.file :as midfile]
             [ring.middleware.multipart-params :as multi]
-            [com.keminglabs.jetty7-websockets-async.core :as ws]
+
+            [immutant.web            ]
+            [immutant.web.async       :as async]
+            [immutant.web.middleware ]
+            
             [clojure.core.async :refer [alts! go close! <! >! <!! sliding-buffer chan timeout]]
             [crypto.random :as random]
             [clojure.edn :as edn])
@@ -70,13 +74,6 @@
               (handler req))))))
 ;;;;
 
-(defn wrap-resource-add-type [handler root-path]
-  (fn [req]
-    (or ((content-type/wrap-content-type 
-          (head/wrap-head #(resources/resource-request % root-path))) req)
-        (handler req))))
-
-
 (defn wrap-enum-sessions [handler & [opts]]
   (fn [req]
     (if (-> req :session :session-id) 
@@ -121,62 +118,65 @@
      :headers {"Content-Type" "text/html"}
      :body "Not Found on Server"}))
 
-;;;;
-(def ws-configurator
-  (ws/configurator ws-chan {:path "/"}))
+
 
 (defn process-client-msg [msg]
   "process the msg received from client via ws"
-  (let [cmd (edn/read-string msg)]
-    (prn "processing cmd" cmd)
+  (let [cmd (edn/read-string msg)]    
     (if-let [callback-uuid (:submit cmd)]
       (if-let [callback-func (@uuid->callback callback-uuid)]
         (callback-func cmd))))
   )
 
-(defn talk-to-ws-conn [in out page-id]
-  (let [cmd-chan (@page->cmd-chan page-id)]    
-    (when cmd-chan 
-      (go
-       (prn "confirm connection msg:" (<! out))
-       (loop []
-            (let [[msg c] (alts! [cmd-chan out])]
-              (if msg
-                (do                  
-                  (condp = c 
-                    cmd-chan (do 
-                               (prn "debug:" page-id msg)
-                               (>! in msg)
-                               )
-                    out (do (prn "msg from out channel" msg)
-                            (>! in "{}")
-                            (process-client-msg msg)
-                            ))
-                  (recur)))))
-          (prn "client disconnected" page-id)
-          (remove-page-session page-id)
-          ))))
+;;ACKNOWLEDGEMENT: this is changed from the immutant/web/middleware.clj, to get the request info for callback
+;;for immutant websocket middleware, callbacks
+(defn wrap-websocket-with-request
+  [handler]
+  (fn [request]
+    (if (:websocket? request)
+      (let [page-id (subs (:uri request) 1)
+            ws-callbacks
+            {:on-open (fn [channel]                        
+                        (if (nil? (@page->session page-id))
+                          (do 
+                            (prn "bad ws connection request" page-id)
+                            (async/send! channel (pr-str {:act :reload}))
+                            )
+                          (do 
+                            (prn "get ws connection from" page-id)
+                            (let [cmd-chan (@page->cmd-chan page-id)]    
+                              (when cmd-chan 
+                                (go                                 
+                                 (loop []
+                                   (let [[msg c] (alts! [cmd-chan])]
+                                     (if msg
+                                       (do                  
+                                         (condp = c 
+                                           cmd-chan (do
+                                                      (async/send! channel msg)
+                                                      )
+                                           )
+                                         (recur))))))))               
+                            )))
+             
+             :on-close (fn [channel  {:keys [code reason]}]
+                         (remove-page-session page-id))
+             
+             :on-message (fn [channel msg]                           
+                           (do                              
+                             (async/send! channel "{}")
+                             (process-client-msg msg)))
+             }]
+        (immutant.web.async/as-channel request ws-callbacks)
+        )
+      (handler request)
+      )
 
-(defn make-new-ws-conn
-  []
-  (go 
-   (loop []
-     (let [{:keys [request in out] :as chconn} (<! ws-chan)]
-       (when chconn
-         (let [page-id (subs (:uri request) 1)]              
-           (if (nil? (@page->session page-id))
-             (do 
-               (prn "bad ws connection request" page-id)
-               ;(>! in (pr-str {:act :redirect :url "/"}))
-               (>! in (pr-str {:act :reload}))
-               )
-             (do 
-               (prn "new ws connection" page-id)
-               ;(pprint request)
-               (talk-to-ws-conn in out page-id))))))
-     (recur)))
+    )
   )
-  
+
+
+
 (defn upload-tmp-store [upload-key]
   (println "!!! get uplaod key:" upload-key))
 
@@ -190,15 +190,15 @@
   ; ( -> handler ring-1 ring-2 ...) apply ring-1, ring-2 from inside ring to out
   (let [app (-> handler
                 wrap-dyna-dispatch
-                wrap-flexfile
-                (wrap-resource-add-type "public/")
+                wrap-flexfile                
+                (resources/wrap-resource "public")
                 wrap-params
-                (multi/wrap-multipart-params :store upload-tmp-store)
+                (multi/wrap-multipart-params {:store upload-tmp-store})
                 wrap-enum-sessions
                 wrap-rule-check
                 (session/wrap-session {:store (cookie-store {:key (get-cookie-key @session-manager)})})
+                wrap-websocket-with-request
                 )]
     
-    (make-new-ws-conn)
-    (jetty/run-jetty app {:host host :port port :join? false 
-                          :configurator ws-configurator})))
+    
+    (immutant.web/run app {"host" host "port" port })))

@@ -12,7 +12,9 @@ Contrubution by:
 Currently I have not setup a clojar download yet. You need to git clone this project to your local disk.
 Then run:
 
-```lein cljsbuild clean```
+```lein clean```
+
+```lein cljsbuild once```
 
 ```lein install```
 
@@ -21,12 +23,15 @@ This will add CloServe to your local maven repo.
 In your project that use CloServe, you can add to project.clj file dependencies:
 
 ```
-[closerve "0.2.0-SNAPSHOT"]
+[closerve "0.3.0-SNAPSHOT"]
 ```
 
 [Example Code](https://github.com/zhaojw/closerve-example)
 
 [Running Example](http://closerve.mkrrf-it.com/lazyload)
+
+##Change from 0.2.0-SNAPSHOT to 0.3.0-SNAPSHOT
+change to use immutant
 
 ##Breaking change from 0.1.0 to 0.2.0
 register-lift-snippet macro's lift-instr parameter used to be: {:name SnippetName, :params {...}}

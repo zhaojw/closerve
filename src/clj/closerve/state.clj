@@ -87,10 +87,13 @@
 ;;;ws commands channel page-uuid -> channel
 (defonce page->cmd-chan (atom {}))
 
+;;not use directly ws channel, since need to write to it sometimes
+;;before ws channel is open, so the sending is delayed
 (defn add-page-cmd-chan [page-id]
   (let [c (chan)]
     (swap! page->cmd-chan assoc page-id c)
-    ))
+    )
+  )
 
 
 (defn remove-page-session [page-uuid]
